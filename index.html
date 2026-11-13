@@ -462,36 +462,52 @@
   <script>
     const PHRASES = [
       {
-        standard: "¿Te parece bien?",
-        chile: "¿Te tinca?",
-        en: "Do you like the idea? / Does that sound good?"
+        standard: "Hola, ¿cómo estás?",
+        chile: "Hola, ¿cómo estái?",
+        en: "Hi, how are you?"
       },
       {
-        standard: "Estoy muy cansada",
-        chile: "Estoy reventada",
-        en: "I'm exhausted"
+        standard: "¿Cuánto cuesta?",
+        chile: "¿Cuánto sale?",
+        en: "How much is it?"
       },
       {
-        standard: "Un poco",
-        chile: "Un cachito",
-        en: "A little bit"
+        standard: "Quiero esto, por favor",
+        chile: "¿Me da esto, por favor?",
+        en: "I'd like this, please."
       },
       {
-        standard: "De acuerdo",
-        chile: "Ya po",
-        en: "Okay / sure; “po” comes from “pues”"
+        standard: "¿Puedo pagar con tarjeta?",
+        chile: "¿Aceptan débito?",
+        en: "Can I pay by card?"
       },
       {
-        standard: "Saca a pasear al perro",
-        chile: "Saca a pasear al JJ",
-        en: "Take the dog (JJ) for a walk"
+        standard: "¿Dónde está el baño?",
+        chile: "¿Dónde queda el baño?",
+        en: "Where is the bathroom?"
+      },
+      {
+        standard: "No entiendo",
+        chile: "No cacho",
+        en: "I don't understand."
+      },
+      {
+        standard: "Más despacio, por favor",
+        chile: "Más lento, por favor",
+        en: "Slower, please."
+      },
+      {
+        standard: "¡Qué genial!",
+        chile: "¡Qué bacán!",
+        en: "That's great!"
       }
     ];
 
-    const WARMUP = [PHRASES[0], PHRASES[2]];
-    const BUILD_WORDS = ["Ya", "po", "vamos"];
-    const BUILD_TARGET = "Ya po, vamos";
-    const SAY_PHRASE = "Estoy reventada";
+    const WARMUP = [PHRASES[0], PHRASES[4]];
+    const BUILD_WORDS = ["¿Me", "da", "esto,", "por", "favor?"];
+    const BUILD_TARGET = "¿Me da esto, por favor?";
+    const SAY_PHRASE = "Más lento, por favor";
+    const SAY_HINT = "Slower, please.";
     const STREAK_KEY = "jean-spanish-lesson-streak";
 
     const SPEAKER_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4zm13.5 3A4.5 4.5 0 0 0 14 8.56v6.88A4.48 4.48 0 0 0 17.5 12zM14 3.23v2.06a7.5 7.5 0 0 1 0 13.42v2.06A9.5 9.5 0 0 0 14 3.23z"/></svg>';
@@ -622,7 +638,7 @@
     }
 
     function formatBuilt(words) {
-      return words.join(" ").replace(/\bpo\b/, "po,");
+      return words.join(" ");
     }
 
     function shuffle(list) {
@@ -669,12 +685,12 @@
             "<i></i>" +
           "</label>" +
         "</div>" +
-        '<p class="hint" id="timeHint" style="margin-bottom:16px">' + mins + ' · 5 phrases</p>' +
+        '<p class="hint" id="timeHint" style="margin-bottom:16px">' + mins + ' · 8 phrases</p>' +
         '<div class="actions"><button class="btn btn-primary" id="startBtn">Start lesson</button></div>';
 
       document.getElementById("shortDayToggle").addEventListener("change", function (e) {
         state.shortDay = e.target.checked;
-        document.getElementById("timeHint").textContent = (state.shortDay ? "About 10 minutes" : "About 15 minutes") + " · 5 phrases";
+        document.getElementById("timeHint").textContent = (state.shortDay ? "About 10 minutes" : "About 15 minutes") + " · 8 phrases";
       });
       document.getElementById("startBtn").addEventListener("click", startLesson);
     }
@@ -806,8 +822,8 @@
     }
 
     function renderChoose() {
-      var options = ["Ya está", "De acuerdo", "Después"];
-      var correct = "De acuerdo";
+      var options = ["I don't understand", "I'm tired", "Let's go"];
+      var correct = "I don't understand";
       var buttons = options.map(function (opt) {
         var cls = "choice";
         if (state.choosePicked === opt) cls += opt === correct ? " right" : " wrong";
@@ -820,13 +836,13 @@
       if (state.choosePicked && !state.chooseCorrect) {
         fb = '<div class="feedback on bad">Not that one. Try again.</div>';
       } else if (state.chooseCorrect) {
-        fb = '<div class="feedback on ok">Yes — “Ya po” means “De acuerdo” (okay / sure).</div>';
+        fb = '<div class="feedback on ok">Yes — “No cacho” means “I don’t understand.”</div>';
       }
 
       document.getElementById("screen-choose").innerHTML =
         '<div class="eyebrow">Choose</div>' +
-        '<h2>What does “Ya po” mean?</h2>' +
-        '<p class="lede">Pick the standard Spanish equivalent.</p>' +
+        '<h2>What does “No cacho” mean?</h2>' +
+        '<p class="lede">Pick the English meaning.</p>' +
         '<div class="choices">' + buttons + '</div>' +
         fb +
         '<div class="actions">' +
@@ -859,7 +875,7 @@
 
       var fb = "";
       if (state.buildResult === "right") {
-        fb = '<div class="feedback on ok">Nice — “Ya po, vamos.”</div>';
+        fb = '<div class="feedback on ok">Nice — “¿Me da esto, por favor?”</div>';
       } else if (state.buildResult === "wrong") {
         fb = '<div class="feedback on bad">Not quite. Tap a word above to remove it, or clear and try again.</div>';
       }
@@ -867,7 +883,7 @@
       document.getElementById("screen-build").innerHTML =
         '<div class="eyebrow">Build the sentence</div>' +
         '<h2>Put the words in order</h2>' +
-        '<p class="lede">Make the sentence: <strong>Ya po, vamos</strong></p>' +
+        '<p class="lede">Make the sentence: <strong>¿Me da esto, por favor?</strong></p>' +
         '<div class="built' + resultClass + '" id="builtBox">' +
           (builtChips || '<span class="hint">Tap the words below</span>') +
         '</div>' +
@@ -954,7 +970,7 @@
           '<div class="chile">' + escapeHtml(SAY_PHRASE) + '</div>' +
           '<div class="audio-row">' +
             '<button type="button" class="icon-btn" id="saySpeak" aria-label="Play phrase">' + SPEAKER_SVG + '</button>' +
-            '<span class="hint">I’m exhausted</span>' +
+            '<span class="hint">' + escapeHtml(SAY_HINT) + '</span>' +
           '</div>' +
         '</div>' +
         '<p class="rec-status' + (state.recState === "recording" ? " live" : "") + '">' + status + '</p>' +

@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F4EDE3">
+  <title>Today's Spanish · Jean</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F4EDE3;
+      --paper: #FFFDF9;
+      --ink: #2A211B;
+      --muted: #6F6156;
+      --line: #E8DCD0;
+      --accent: #C24E1D;
+      --accent-dark: #9A3B14;
+      --accent-soft: #F8E4D8;
+      --ok: #1F6B45;
+      --ok-soft: #E4F3EA;
+      --bad: #A33B2B;
+      --bad-soft: #F8E6E3;
+      --shadow: 0 8px 24px rgba(42, 33, 27, 0.08);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Nunito", "Segoe UI", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .app {
+      width: min(430px, 100%);
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 18px 12px;
+      overflow: hidden;
+    }
+
+    .progress-wrap {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap.on { display: flex; }
+
+    .bar {
+      flex: 1;
+      height: 8px;
+      background: #E5D8CA;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    .step-count {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .screen { display: none; flex: 1; flex-direction: column; min-height: 0; }
+    .screen.on { display: flex; overflow: auto; }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    h1, h2 {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    h1 { font-size: 30px; margin-bottom: 8px; }
+    h2 { font-size: 24px; margin-bottom: 8px; }
+
+    .lede { color: var(--muted); margin-bottom: 22px; }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
+    }
+
+    .home-hero { margin-top: 28px; }
+
+    .streak-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      margin-bottom: 18px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 8px 0 28px;
+    }
+
+    .toggle-copy { flex: 1; }
+    .toggle-copy strong { display: block; font-size: 16px; }
+    .toggle-copy span { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+
+    .switch {
+      position: relative;
+      width: 52px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 52px;
+      height: 32px;
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .switch i {
+      display: block;
+      width: 52px;
+      height: 32px;
+      border-radius: 99px;
+      background: #D9CBBE;
+      transition: background 0.2s;
+    }
+
+    .switch i::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 26px;
+      height: 26px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .switch input:checked + i { background: var(--accent); }
+    .switch input:checked + i::after { transform: translateX(20px); }
+    .switch input:focus-visible + i { outline: 3px solid #F0B28A; outline-offset: 2px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn:disabled { opacity: 0.45; cursor: default; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:not(:disabled):active { background: var(--accent-dark); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      min-height: 48px;
+      font-size: 16px;
+    }
+    .btn-secondary {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+    }
+    .btn-ok { background: var(--ok); color: #fff; }
+    .btn-record { background: #8B2E22; color: #fff; }
+    .btn-record.on { background: #C0392B; }
+
+    .actions {
+      margin-top: auto;
+      padding-top: 16px;
+      padding-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: sticky;
+      bottom: 0;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .standard {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .chile {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--accent-dark);
+      line-height: 1.25;
+    }
+
+    .meaning {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .audio-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .icon-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:active { background: var(--accent-dark); }
+    .icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
+    .icon-btn.ghost {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+    }
+
+    .hint { font-size: 14px; color: var(--muted); }
+
+    .tap-hint {
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+      margin-top: 14px;
+      font-size: 15px;
+    }
+
+    .flip.revealed .tap-hint { display: none; }
+    .hidden-block { display: none; }
+    .flip.revealed .hidden-block { display: block; }
+
+    .counter {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .choices { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+    .choice {
+      min-height: 56px;
+      width: 100%;
+      border: 2px solid var(--line);
+      background: var(--paper);
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .choice:disabled { cursor: default; }
+    .choice.right { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+    .choice.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .feedback.on { display: block; }
+    .feedback.ok { background: var(--ok-soft); color: var(--ok); }
+    .feedback.bad { background: var(--bad-soft); color: var(--bad); }
+
+    .built {
+      min-height: 72px;
+      background: var(--paper);
+      border: 2px dashed var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .built.right { border-style: solid; border-color: var(--ok); background: var(--ok-soft); }
+    .built.wrong { border-style: solid; border-color: var(--bad); background: var(--bad-soft); }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--line);
+      background: var(--paper);
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .chip:disabled { opacity: 0.28; cursor: default; }
+    .bank { display: flex; flex-wrap: wrap; gap: 10px; }
+    .built .chip { background: #fff; }
+
+    .rec-status {
+      text-align: center;
+      margin: 16px 0 8px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .rec-status.live { color: #C0392B; }
+    audio { width: 100%; margin: 12px 0; }
+
+    .phrase-list { list-style: none; display: flex; flex-direction: column; gap: 8px; padding-bottom: 4px; }
+
+    .phrase-list li {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
+    .phrase-list .std { font-size: 13px; color: var(--muted); font-weight: 700; }
+    .phrase-list .cl { font-size: 17px; font-weight: 800; color: var(--accent-dark); }
+    .phrase-list .en { font-size: 13px; color: var(--ink); margin-top: 2px; }
+
+    .close-streak {
+      text-align: center;
+      background: var(--accent-soft);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 4px 0 12px;
+    }
+
+    .close-streak b { display: block; font-size: 28px; color: var(--accent-dark); }
+    .close-streak span { color: var(--accent-dark); font-weight: 700; }
+
+    .list-label {
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: #C0392B;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="progress-wrap" id="progressWrap">
+      <div class="bar" aria-hidden="true"><span id="barFill"></span></div>
+      <div class="step-count" id="stepCount"></div>
+    </div>
+
+    <section class="screen on" id="screen-home"></section>
+    <section class="screen" id="screen-warmup"></section>
+    <section class="screen" id="screen-phrases"></section>
+    <section class="screen" id="screen-choose"></section>
+    <section class="screen" id="screen-build"></section>
+    <section class="screen" id="screen-say"></section>
+    <section class="screen" id="screen-close"></section>
+  </div>
+
+  <script>
+    const PHRASES = [
+      {
+        standard: "¿Te parece bien?",
+        chile: "¿Te tinca?",
+        en: "Do you like the idea? / Does that sound good?"
+      },
+      {
+        standard: "Estoy muy cansada",
+        chile: "Estoy reventada",
+        en: "I'm exhausted"
+      },
+      {
+        standard: "Un poco",
+        chile: "Un cachito",
+        en: "A little bit"
+      },
+      {
+        standard: "De acuerdo",
+        chile: "Ya po",
+        en: "Okay / sure; “po” comes from “pues”"
+      },
+      {
+        standard: "Saca a pasear al perro",
+        chile: "Saca a pasear al JJ",
+        en: "Take the dog (JJ) for a walk"
+      }
+    ];
+
+    const WARMUP = [PHRASES[0], PHRASES[2]];
+    const BUILD_WORDS = ["Ya", "po", "vamos"];
+    const BUILD_TARGET = "Ya po, vamos";
+    const SAY_PHRASE = "Estoy reventada";
+    const STREAK_KEY = "jean-spanish-lesson-streak";
+
+    const SPEAKER_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4zm13.5 3A4.5 4.5 0 0 0 14 8.56v6.88A4.48 4.48 0 0 0 17.5 12zM14 3.23v2.06a7.5 7.5 0 0 1 0 13.42v2.06A9.5 9.5 0 0 0 14 3.23z"/></svg>';
+
+    const state = {
+      shortDay: false,
+      screen: "home",
+      warmupIndex: 0,
+      warmupRevealed: false,
+      phraseIndex: 0,
+      choosePicked: null,
+      chooseCorrect: false,
+      bank: [],
+      built: [],
+      buildResult: null,
+      recState: "idle",
+      recUrl: null,
+      recError: null,
+      voicesReady: false
+    };
+
+    let mediaRecorder = null;
+    let mediaStream = null;
+    let recChunks = [];
+
+    function todayStr() {
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Santiago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(new Date());
+    }
+
+    function addDays(ymd, days) {
+      var parts = ymd.split("-").map(Number);
+      var dt = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+      dt.setUTCDate(dt.getUTCDate() + days);
+      return dt.toISOString().slice(0, 10);
+    }
+
+    function getStreak() {
+      try {
+        return JSON.parse(localStorage.getItem(STREAK_KEY) || '{"count":0,"last":""}');
+      } catch (e) {
+        return { count: 0, last: "" };
+      }
+    }
+
+    function applyStreak() {
+      var data = getStreak();
+      var today = todayStr();
+      data.already = data.last === today;
+      if (!data.already) {
+        data.count = data.last === addDays(today, -1) ? data.count + 1 : 1;
+        data.last = today;
+        localStorage.setItem(STREAK_KEY, JSON.stringify({ count: data.count, last: data.last }));
+      }
+      return data;
+    }
+
+    function lessonSteps() {
+      return state.shortDay
+        ? ["phrases", "choose", "build", "close"]
+        : ["warmup", "phrases", "choose", "build", "say", "close"];
+    }
+
+    function updateProgress() {
+      var steps = lessonSteps();
+      var wrap = document.getElementById("progressWrap");
+      var i = steps.indexOf(state.screen);
+      if (i < 0) {
+        wrap.classList.remove("on");
+        return;
+      }
+      wrap.classList.add("on");
+      var pct = ((i + 1) / steps.length) * 100;
+      document.getElementById("barFill").style.width = pct + "%";
+      document.getElementById("stepCount").textContent = (i + 1) + "/" + steps.length;
+    }
+
+    function showScreen(name) {
+      state.screen = name;
+      document.querySelectorAll(".screen").forEach(function (el) {
+        el.classList.toggle("on", el.id === "screen-" + name);
+      });
+      updateProgress();
+      if (name === "warmup") renderWarmup();
+      if (name === "phrases") renderPhrases();
+      if (name === "choose") renderChoose();
+      if (name === "build") renderBuild();
+      if (name === "say") renderSay();
+      if (name === "close") renderClose();
+    }
+
+    function pickVoice() {
+      var voices = speechSynthesis.getVoices() || [];
+      var cl = voices.find(function (v) { return /^es-CL/i.test(v.lang); });
+      var es = voices.find(function (v) { return /^es-ES/i.test(v.lang); });
+      var anyEs = voices.find(function (v) { return /^es\b/i.test(v.lang); });
+      return cl || es || anyEs || null;
+    }
+
+    function speak(text) {
+      if (!window.speechSynthesis) return;
+      var u = new SpeechSynthesisUtterance(text);
+      var voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.lang = voice && /^es-CL/i.test(voice.lang) ? "es-CL" : (voice && /^es-/i.test(voice.lang) ? voice.lang : "es-CL");
+      u.rate = 0.92;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    }
+
+    if (window.speechSynthesis) {
+      speechSynthesis.addEventListener("voiceschanged", function () {
+        state.voicesReady = true;
+      });
+      if (speechSynthesis.getVoices().length) state.voicesReady = true;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatBuilt(words) {
+      return words.join(" ").replace(/\bpo\b/, "po,");
+    }
+
+    function shuffle(list) {
+      var a = list.slice();
+      var i, j, t;
+      for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+      }
+      return a;
+    }
+
+    function shuffledBank() {
+      var bank, guard = 0;
+      do {
+        bank = shuffle(BUILD_WORDS);
+        guard++;
+      } while (formatBuilt(bank) === BUILD_TARGET && guard < 20);
+      return bank;
+    }
+
+    function renderHome() {
+      var streak = getStreak();
+      var mins = state.shortDay ? "About 10 minutes" : "About 15 minutes";
+      var streakHtml = streak.count > 0
+        ? '<div class="streak-pill">🔥 ' + streak.count + '-day streak</div>'
+        : "";
+      document.getElementById("screen-home").innerHTML =
+        '<div class="home-hero">' +
+          streakHtml +
+          '<div class="eyebrow">Spanish for Jean</div>' +
+          '<h1>Today’s lesson</h1>' +
+          '<p class="lede">Everyday phrases in standard Spanish, plus how we say them in Chile. Explanations are in English.</p>' +
+        '</div>' +
+        '<div class="toggle-row">' +
+          '<div class="toggle-copy">' +
+            '<strong>Short day</strong>' +
+            '<span>Skips warm-up and speaking</span>' +
+          '</div>' +
+          '<label class="switch">' +
+            '<input type="checkbox" id="shortDayToggle"' + (state.shortDay ? " checked" : "") + ' aria-label="Short day">' +
+            "<i></i>" +
+          "</label>" +
+        "</div>" +
+        '<p class="hint" id="timeHint" style="margin-bottom:16px">' + mins + ' · 5 phrases</p>' +
+        '<div class="actions"><button class="btn btn-primary" id="startBtn">Start lesson</button></div>';
+
+      document.getElementById("shortDayToggle").addEventListener("change", function (e) {
+        state.shortDay = e.target.checked;
+        document.getElementById("timeHint").textContent = (state.shortDay ? "About 10 minutes" : "About 15 minutes") + " · 5 phrases";
+      });
+      document.getElementById("startBtn").addEventListener("click", startLesson);
+    }
+
+    function startLesson() {
+      state.warmupIndex = 0;
+      state.warmupRevealed = false;
+      state.phraseIndex = 0;
+      state.choosePicked = null;
+      state.chooseCorrect = false;
+      state.bank = shuffledBank();
+      state.built = [];
+      state.buildResult = null;
+      state.recState = "idle";
+      state.recError = null;
+      if (state.recUrl) {
+        URL.revokeObjectURL(state.recUrl);
+        state.recUrl = null;
+      }
+      showScreen(state.shortDay ? "phrases" : "warmup");
+    }
+
+    function renderWarmup() {
+      var p = WARMUP[state.warmupIndex];
+      var revealed = state.warmupRevealed;
+      document.getElementById("screen-warmup").innerHTML =
+        '<div class="eyebrow">Warm-up</div>' +
+        '<h2>A quick review</h2>' +
+        '<p class="counter">' + (state.warmupIndex + 1) + ' of ' + WARMUP.length + '</p>' +
+        '<div class="card flip' + (revealed ? " revealed" : "") + '" id="warmupCard" role="button" tabindex="0">' +
+          '<div class="label">In Chile</div>' +
+          '<div class="chile">' + escapeHtml(p.chile) + '</div>' +
+          '<div class="audio-row">' +
+            '<button type="button" class="icon-btn" id="wuSpeak" aria-label="Play Chilean phrase">' + SPEAKER_SVG + '</button>' +
+            '<span class="hint">Listen</span>' +
+          '</div>' +
+          (revealed
+            ? '<div class="hidden-block">' +
+                '<div class="meaning">' +
+                  '<div class="label">Standard Spanish</div>' +
+                  '<div class="standard" style="margin-bottom:8px">' + escapeHtml(p.standard) + '</div>' +
+                  '<div class="label">In English</div>' +
+                  '<div>' + escapeHtml(p.en) + '</div>' +
+                '</div>' +
+              '</div>'
+            : '<p class="tap-hint">Tap the card to reveal</p>') +
+        '</div>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" id="wuNext"' + (revealed ? "" : " disabled") + '>' +
+            (state.warmupIndex < WARMUP.length - 1 ? "Next phrase" : "Continue") +
+          '</button>' +
+        '</div>';
+
+      document.getElementById("wuSpeak").addEventListener("click", function (e) {
+        e.stopPropagation();
+        speak(p.chile);
+      });
+      document.getElementById("warmupCard").addEventListener("click", function (e) {
+        if (e.target.closest("#wuSpeak")) return;
+        if (!state.warmupRevealed) {
+          state.warmupRevealed = true;
+          renderWarmup();
+        }
+      });
+      document.getElementById("warmupCard").addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (!state.warmupRevealed) {
+            state.warmupRevealed = true;
+            renderWarmup();
+          }
+        }
+      });
+      document.getElementById("wuNext").addEventListener("click", function () {
+        if (state.warmupIndex < WARMUP.length - 1) {
+          state.warmupIndex += 1;
+          state.warmupRevealed = false;
+          renderWarmup();
+        } else {
+          showScreen("phrases");
+        }
+      });
+    }
+
+    function renderPhrases() {
+      var p = PHRASES[state.phraseIndex];
+      document.getElementById("screen-phrases").innerHTML =
+        '<div class="eyebrow">New phrases</div>' +
+        '<h2>Standard and Chilean</h2>' +
+        '<p class="counter">' + (state.phraseIndex + 1) + ' of ' + PHRASES.length + '</p>' +
+        '<div class="card">' +
+          '<div class="label">Standard Spanish</div>' +
+          '<div class="standard">' + escapeHtml(p.standard) + '</div>' +
+          '<div class="label">In Chile</div>' +
+          '<div class="chile">' + escapeHtml(p.chile) + '</div>' +
+          '<div class="audio-row">' +
+            '<button type="button" class="icon-btn" id="phSpeakCl" aria-label="Play Chilean phrase">' + SPEAKER_SVG + '</button>' +
+            '<button type="button" class="icon-btn ghost" id="phSpeakStd" aria-label="Play standard phrase">' + SPEAKER_SVG + '</button>' +
+            '<span class="hint">Chilean · standard</span>' +
+          '</div>' +
+          '<div class="meaning">' +
+            '<div class="label">In English</div>' +
+            '<div>' + escapeHtml(p.en) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="actions">' +
+          (state.phraseIndex > 0 ? '<button class="btn btn-ghost" id="phBack">Back</button>' : "") +
+          '<button class="btn btn-primary" id="phNext">' +
+            (state.phraseIndex < PHRASES.length - 1 ? "Next phrase" : "Continue") +
+          '</button>' +
+        '</div>';
+
+      document.getElementById("phSpeakCl").addEventListener("click", function () { speak(p.chile); });
+      document.getElementById("phSpeakStd").addEventListener("click", function () { speak(p.standard); });
+      if (state.phraseIndex > 0) {
+        document.getElementById("phBack").addEventListener("click", function () {
+          state.phraseIndex -= 1;
+          renderPhrases();
+        });
+      }
+      document.getElementById("phNext").addEventListener("click", function () {
+        if (state.phraseIndex < PHRASES.length - 1) {
+          state.phraseIndex += 1;
+          renderPhrases();
+        } else {
+          showScreen("choose");
+        }
+      });
+    }
+
+    function renderChoose() {
+      var options = ["Ya está", "De acuerdo", "Después"];
+      var correct = "De acuerdo";
+      var buttons = options.map(function (opt) {
+        var cls = "choice";
+        if (state.choosePicked === opt) cls += opt === correct ? " right" : " wrong";
+        if (state.chooseCorrect && opt === correct) cls += " right";
+        var disabled = state.chooseCorrect ? " disabled" : "";
+        return '<button type="button" class="' + cls + '" data-opt="' + escapeHtml(opt) + '"' + disabled + ">" + escapeHtml(opt) + "</button>";
+      }).join("");
+
+      var fb = "";
+      if (state.choosePicked && !state.chooseCorrect) {
+        fb = '<div class="feedback on bad">Not that one. Try again.</div>';
+      } else if (state.chooseCorrect) {
+        fb = '<div class="feedback on ok">Yes — “Ya po” means “De acuerdo” (okay / sure).</div>';
+      }
+
+      document.getElementById("screen-choose").innerHTML =
+        '<div class="eyebrow">Choose</div>' +
+        '<h2>What does “Ya po” mean?</h2>' +
+        '<p class="lede">Pick the standard Spanish equivalent.</p>' +
+        '<div class="choices">' + buttons + '</div>' +
+        fb +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" id="chNext"' + (state.chooseCorrect ? "" : " disabled") + '>Continue</button>' +
+        '</div>';
+
+      document.querySelectorAll(".choice").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (state.chooseCorrect) return;
+          var opt = btn.getAttribute("data-opt");
+          state.choosePicked = opt;
+          state.chooseCorrect = opt === correct;
+          renderChoose();
+        });
+      });
+      document.getElementById("chNext").addEventListener("click", function () {
+        showScreen("build");
+      });
+    }
+
+    function renderBuild() {
+      var resultClass = state.buildResult === "right" ? " right" : state.buildResult === "wrong" ? " wrong" : "";
+      var builtChips = state.built.map(function (w, i) {
+        return '<button type="button" class="chip" data-from="' + i + '">' + escapeHtml(w) + "</button>";
+      }).join("");
+      var bankChips = state.bank.map(function (w, i) {
+        var used = state.built.indexOf(w) !== -1;
+        return '<button type="button" class="chip" data-bank="' + i + '"' + (used || state.buildResult === "right" ? " disabled" : "") + ">" + escapeHtml(w) + "</button>";
+      }).join("");
+
+      var fb = "";
+      if (state.buildResult === "right") {
+        fb = '<div class="feedback on ok">Nice — “Ya po, vamos.”</div>';
+      } else if (state.buildResult === "wrong") {
+        fb = '<div class="feedback on bad">Not quite. Tap a word above to remove it, or clear and try again.</div>';
+      }
+
+      document.getElementById("screen-build").innerHTML =
+        '<div class="eyebrow">Build the sentence</div>' +
+        '<h2>Put the words in order</h2>' +
+        '<p class="lede">Make the sentence: <strong>Ya po, vamos</strong></p>' +
+        '<div class="built' + resultClass + '" id="builtBox">' +
+          (builtChips || '<span class="hint">Tap the words below</span>') +
+        '</div>' +
+        '<div class="bank">' + bankChips + '</div>' +
+        fb +
+        '<div class="actions">' +
+          '<button class="btn btn-ghost" id="bdClear"' + (state.built.length && state.buildResult !== "right" ? "" : " disabled") + '>Clear</button>' +
+          '<button class="btn btn-primary" id="bdNext"' + (state.buildResult === "right" ? "" : " disabled") + '>Continue</button>' +
+        '</div>';
+
+      document.querySelectorAll("[data-bank]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (state.buildResult === "right" || btn.disabled) return;
+          var i = Number(btn.getAttribute("data-bank"));
+          state.built.push(state.bank[i]);
+          state.buildResult = null;
+          if (state.built.length === BUILD_WORDS.length) {
+            state.buildResult = formatBuilt(state.built) === BUILD_TARGET ? "right" : "wrong";
+          }
+          renderBuild();
+        });
+      });
+      document.querySelectorAll("[data-from]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (state.buildResult === "right") return;
+          var i = Number(btn.getAttribute("data-from"));
+          state.built.splice(i, 1);
+          state.buildResult = null;
+          renderBuild();
+        });
+      });
+      document.getElementById("bdClear").addEventListener("click", function () {
+        state.built = [];
+        state.buildResult = null;
+        renderBuild();
+      });
+      document.getElementById("bdNext").addEventListener("click", function () {
+        showScreen(state.shortDay ? "close" : "say");
+      });
+    }
+
+    function stopStream() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(function (t) { t.stop(); });
+        mediaStream = null;
+      }
+      mediaRecorder = null;
+    }
+
+    function preferredMime() {
+      var types = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
+      if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return "";
+      for (var i = 0; i < types.length; i++) {
+        if (MediaRecorder.isTypeSupported(types[i])) return types[i];
+      }
+      return "";
+    }
+
+    function renderSay() {
+      var status = "Tap record, then say the phrase.";
+      if (state.recState === "recording") status = '<span class="dot"></span>Recording… tap stop when you finish.';
+      if (state.recState === "done") status = "Here’s your recording. Listen, or try again.";
+      if (state.recError) status = state.recError;
+
+      var controls = "";
+      if (state.recState === "recording") {
+        controls = '<button class="btn btn-record on" id="recBtn">Stop</button>';
+      } else if (state.recState === "done") {
+        controls =
+          (state.recUrl ? '<audio controls src="' + state.recUrl + '"></audio>' : "") +
+          '<button class="btn btn-secondary" id="recBtn">Try again</button>' +
+          '<button class="btn btn-primary" id="sayNext">Continue</button>';
+      } else {
+        controls =
+          '<button class="btn btn-record" id="recBtn">Record</button>' +
+          '<button class="btn btn-ghost" id="saySkip">Skip</button>';
+      }
+
+      document.getElementById("screen-say").innerHTML =
+        '<div class="eyebrow">Say it</div>' +
+        '<h2>Say this out loud</h2>' +
+        '<div class="card">' +
+          '<div class="label">In Chile</div>' +
+          '<div class="chile">' + escapeHtml(SAY_PHRASE) + '</div>' +
+          '<div class="audio-row">' +
+            '<button type="button" class="icon-btn" id="saySpeak" aria-label="Play phrase">' + SPEAKER_SVG + '</button>' +
+            '<span class="hint">I’m exhausted</span>' +
+          '</div>' +
+        '</div>' +
+        '<p class="rec-status' + (state.recState === "recording" ? " live" : "") + '">' + status + '</p>' +
+        '<div class="actions">' + controls + '</div>';
+
+      document.getElementById("saySpeak").addEventListener("click", function () { speak(SAY_PHRASE); });
+
+      var recBtn = document.getElementById("recBtn");
+      if (recBtn) recBtn.addEventListener("click", onRecClick);
+      var skip = document.getElementById("saySkip");
+      if (skip) skip.addEventListener("click", function () {
+        stopStream();
+        showScreen("close");
+      });
+      var next = document.getElementById("sayNext");
+      if (next) next.addEventListener("click", function () {
+        stopStream();
+        showScreen("close");
+      });
+    }
+
+    function onRecClick() {
+      if (state.recState === "recording") {
+        if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+        return;
+      }
+      startRecording();
+    }
+
+    function startRecording() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+        state.recError = "Microphone isn’t available in this browser. You can skip this step.";
+        state.recState = "idle";
+        renderSay();
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        mediaStream = stream;
+        recChunks = [];
+        var mime = preferredMime();
+        mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = function (e) {
+          if (e.data && e.data.size) recChunks.push(e.data);
+        };
+        mediaRecorder.onstop = function () {
+          stopStream();
+          if (state.recUrl) URL.revokeObjectURL(state.recUrl);
+          var blob = new Blob(recChunks, { type: recChunks[0] && recChunks[0].type ? recChunks[0].type : "audio/webm" });
+          state.recUrl = URL.createObjectURL(blob);
+          state.recState = "done";
+          state.recError = null;
+          renderSay();
+        };
+        mediaRecorder.start();
+        state.recState = "recording";
+        state.recError = null;
+        renderSay();
+      }).catch(function () {
+        state.recError = "Microphone isn’t available or permission was denied. You can skip this step.";
+        state.recState = "idle";
+        renderSay();
+      });
+    }
+
+    function renderClose() {
+      var data = applyStreak();
+      var items = PHRASES.map(function (p) {
+        return '<li><div class="std">' + escapeHtml(p.standard) + '</div>' +
+          '<div class="cl">' + escapeHtml(p.chile) + '</div>' +
+          '<div class="en">' + escapeHtml(p.en) + "</div></li>";
+      }).join("");
+      document.getElementById("screen-close").innerHTML =
+        '<div class="eyebrow">Done for today</div>' +
+        '<h2>Nice work</h2>' +
+        '<div class="close-streak">' +
+          "<b>" + data.count + "</b>" +
+          "<span>" + (data.already ? "day streak  ·  already counted today" : "day streak  ·  +1 today") + "</span>" +
+        "</div>" +
+        '<p class="list-label">Today’s phrases</p>' +
+        '<ul class="phrase-list">' + items + "</ul>" +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" id="homeBtn">Back to start</button>' +
+        "</div>";
+      document.getElementById("homeBtn").addEventListener("click", function () {
+        showScreen("home");
+        renderHome();
+      });
+    }
+
+    renderHome();
+    updateProgress();
+  </script>
+</body>
+</html>
